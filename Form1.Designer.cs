@@ -48,6 +48,7 @@
             this.btnRead = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.lblTotalRecord = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvGames)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -112,9 +113,6 @@
             // 
             // dgvGames
             // 
-            this.dgvGames.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvGames.BackgroundColor = System.Drawing.Color.Aquamarine;
             this.dgvGames.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -125,20 +123,21 @@
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvGames.DefaultCellStyle = dataGridViewCellStyle1;
-            this.dgvGames.Location = new System.Drawing.Point(524, 854);
+            this.dgvGames.Location = new System.Drawing.Point(504, 746);
             this.dgvGames.Name = "dgvGames";
             this.dgvGames.RowHeadersWidth = 82;
             this.dgvGames.RowTemplate.Height = 33;
-            this.dgvGames.Size = new System.Drawing.Size(996, 326);
+            this.dgvGames.Size = new System.Drawing.Size(1170, 326);
             this.dgvGames.TabIndex = 5;
             this.dgvGames.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvGames_CellContentClick);
             // 
             // txtJudul
             // 
             this.txtJudul.BackColor = System.Drawing.SystemColors.Window;
-            this.txtJudul.Location = new System.Drawing.Point(330, 53);
+            this.txtJudul.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtJudul.Location = new System.Drawing.Point(309, 50);
             this.txtJudul.Name = "txtJudul";
-            this.txtJudul.Size = new System.Drawing.Size(100, 31);
+            this.txtJudul.Size = new System.Drawing.Size(213, 35);
             this.txtJudul.TabIndex = 7;
             // 
             // cbGenre
@@ -153,7 +152,7 @@
             "Horror"});
             this.cbGenre.Location = new System.Drawing.Point(309, 134);
             this.cbGenre.Name = "cbGenre";
-            this.cbGenre.Size = new System.Drawing.Size(121, 33);
+            this.cbGenre.Size = new System.Drawing.Size(213, 33);
             this.cbGenre.TabIndex = 8;
             // 
             // cbStatus
@@ -165,7 +164,7 @@
             "Complated"});
             this.cbStatus.Location = new System.Drawing.Point(309, 335);
             this.cbStatus.Name = "cbStatus";
-            this.cbStatus.Size = new System.Drawing.Size(121, 33);
+            this.cbStatus.Size = new System.Drawing.Size(213, 33);
             this.cbStatus.TabIndex = 9;
             // 
             // label2
@@ -222,7 +221,7 @@
             "Mobile"});
             this.cbPlatform.Location = new System.Drawing.Point(309, 228);
             this.cbPlatform.Name = "cbPlatform";
-            this.cbPlatform.Size = new System.Drawing.Size(121, 33);
+            this.cbPlatform.Size = new System.Drawing.Size(213, 33);
             this.cbPlatform.TabIndex = 14;
             // 
             // label1
@@ -230,7 +229,7 @@
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 10.125F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(615, 794);
+            this.label1.Location = new System.Drawing.Point(603, 677);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(183, 37);
             this.label1.TabIndex = 15;
@@ -239,7 +238,7 @@
             // txtSearch
             // 
             this.txtSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.875F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSearch.Location = new System.Drawing.Point(1019, 801);
+            this.txtSearch.Location = new System.Drawing.Point(1055, 677);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(314, 31);
             this.txtSearch.TabIndex = 16;
@@ -286,11 +285,22 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Button CRUD";
             // 
+            // lblTotalRecord
+            // 
+            this.lblTotalRecord.AutoSize = true;
+            this.lblTotalRecord.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTotalRecord.Location = new System.Drawing.Point(954, 1121);
+            this.lblTotalRecord.Name = "lblTotalRecord";
+            this.lblTotalRecord.Size = new System.Drawing.Size(271, 29);
+            this.lblTotalRecord.TabIndex = 20;
+            this.lblTotalRecord.Text = "Total Koleksi Game: 0";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2207, 1208);
+            this.Controls.Add(this.lblTotalRecord);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.txtSearch);
@@ -330,6 +340,7 @@
         private System.Windows.Forms.Button btnRead;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label lblTotalRecord;
     }
 }
 

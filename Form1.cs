@@ -25,10 +25,12 @@ namespace KatalogGamePribadi
             InitializeComponent();
             // Inisialisasi koneksi menggunakan class KoneksiDB yang sudah kamu buat sebelumnya
             conn = koneksi.GetConn();
+            HitungTotalGame(); // Panggil fungsi hitung total saat form pertama kali dimuat
         }
-    
 
-    private void ConnectDatabase()
+        
+
+        private void ConnectDatabase()
         {
             try
             {
@@ -126,7 +128,9 @@ namespace KatalogGamePribadi
                 {
                     MessageBox.Show("Data game berhasil ditambahkan");
                     ClearForm();
-                    btnRead.PerformClick(); // Supaya tabel langsung update
+                    btnRead.PerformClick();
+                    HitungTotalGame(); // <--- Panggil di sini
+                    btnRead.PerformClick();// Supaya tabel langsung update
                 }
             }
             catch (Exception ex)
@@ -170,7 +174,9 @@ namespace KatalogGamePribadi
                     MessageBox.Show("Data Berhasil Diperbarui!");
                     btnRead.PerformClick();
                     ClearForm();
-                    selectedGameId = ""; // Reset ID setelah update
+                    selectedGameId = "";
+                    HitungTotalGame(); // <--- Panggil di sini
+                    btnRead.PerformClick();// Reset ID setelah update
                 }
             }
             catch (Exception ex)
@@ -213,6 +219,8 @@ namespace KatalogGamePribadi
                 catch (Exception ex)
                 {
                     MessageBox.Show("Gagal Hapus: " + ex.Message);
+                    HitungTotalGame(); // <--- Panggil di sini
+                    btnRead.PerformClick();
                 }
             }
         }
@@ -272,6 +280,37 @@ namespace KatalogGamePribadi
             cbPlatform.SelectedIndex = -1;
             cbGenre.SelectedIndex = -1;
             cbStatus.SelectedIndex = -1;
+        }
+
+        private void HitungTotalGame()
+        {
+            try
+            {
+                // Pastikan koneksi terbuka
+                if (conn.State == ConnectionState.Closed) conn.Open();
+
+                // Query SQL untuk menghitung baris
+                string query = "SELECT COUNT(*) FROM Games";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+
+                // ExecuteScalar digunakan untuk mengambil satu nilai (hasil COUNT)
+                // Kita konversi hasil object ke tipe int
+                int total = Convert.ToInt32(cmd.ExecuteScalar());
+
+                // Tampilkan ke label
+                lblTotalRecord.Text = "Total Koleksi Game: " + total.ToString();
+            }
+            catch (Exception ex)
+            {
+                // Jangan tampilkan MessageBox agar tidak mengganggu, cukup log jika perlu
+                Console.WriteLine("Error Hitung Data: " + ex.Message);
+            }
+            finally
+            {
+                // Jangan tutup koneksi jika fungsi ini dipanggil di tengah proses lain
+                // atau sesuaikan dengan alur buka-tutup koneksi kamu
+            }
         }
 
     }
