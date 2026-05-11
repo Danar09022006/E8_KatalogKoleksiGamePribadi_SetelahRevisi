@@ -208,6 +208,42 @@ namespace KatalogGamePribadi
 
 
             private void btnDelete_Click(object sender, EventArgs e)
+            {
+            if (txtJudul.Text == "")
+            {
+                MessageBox.Show("Pilih data yang akan dihapus!");
+                return;
+            }
+
+            // Konfirmasi dulu sebelum hapus (biar tidak salah pencet)
+            if (MessageBox.Show("Hapus game '" + txtJudul.Text + "'?", "Konfirmasi", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                try
+                {
+                    conn = koneksi.GetConn();
+                    conn.Open();
+
+                    string query = "DELETE FROM Games WHERE judul_game=@judul";
+                    cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@judul", txtJudul.Text);
+
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Data Berhasil Dihapus!");
+
+                    conn.Close();
+                    btnRead.PerformClick();
+                    HitungTotalGame();
+                    ClearForm();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Gagal Hapus: " + ex.Message);
+                    btnRead.PerformClick();
+                }
+            }
+        }
+    }
         }
 
     }
