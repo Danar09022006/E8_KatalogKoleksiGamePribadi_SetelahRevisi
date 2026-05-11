@@ -113,6 +113,14 @@ namespace KatalogGamePribadi
                     return;
                     
                 }
+                string checkQuery = "SELECT COUNT(*) FROM Games WHERE judul_game = @judul.Check";
+                SqlCommand cmdCheck = new SqlCommand(checkQuery, conn);
+                cmdCheck.Parameters.AddWithValue("@judulCheck", txtJudul.Text);
+
+                if (conn.State == ConnectionState.Closed) conn.Open();
+                int gameExists = Convert.ToInt32(cmdCheck.ExecuteScalar());
+
+                if (gameExists > 0)
             }
         }
 
