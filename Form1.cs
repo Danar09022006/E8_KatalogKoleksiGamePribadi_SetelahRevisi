@@ -76,7 +76,15 @@ namespace KatalogGamePribadi
                 dgvGames.Columns.Add("judul_game", "judul_game");
                 dgvGames.Columns.Add("genre", "genre");
                 dgvGames.Columns.Add("status_main", "status_main");
-            }
+
+                string query = "SELECT * FROM Games";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                SqlDataReader reader = cmd.ExecuteReader();
+                HitungTotalGame();
+                while (reader.Read())
+                {
+
+                }
 
 
 
