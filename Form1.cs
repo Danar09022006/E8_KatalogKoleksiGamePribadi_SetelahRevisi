@@ -125,6 +125,54 @@ namespace KatalogGamePribadi
                     MessageBox.Show("⚠️Judul game sudah ada dalam koleksi!!⚠️", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
+
+                if (conn.State == ConnectionState.Closed) conn.Open();
+
+                string query = @"INSERT INTO Games (judul_game, id_platform, id_user, genre, status_main)
+
+                       VALUES (@judul_game, @id_platform, @id_user, @genre, @status_main)";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+
+                cmd.Parameters.AddWithValue("@judul", txtJudul.Text);
+                cmd.Parameters.AddWithValue("@platform", cbPlatform.SelectedIndex + 1);
+                cmd.Parameters.AddWithValue("@genre", cbGenre.Text);
+                cmd.Parameters.AddWithValue("@status", cbStatus.Text);
+
+                cmd.Parameters.AddWithValue("@id_user", 1);
+
+                int result = cmd.ExecuteNonQuery();
+
+                if (result > 0)
+                {
+                    MessageBox.Show("Data game berhasil ditambahkan");
+                    ClearForm();
+                    btnRead.PerformClick();
+                    HitungTotalGame(); // <--- Panggil di sini
+                    btnRead.PerformClick();// Supaya tabel langsung update
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Terjadi kesalahan:" + ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(selectedGameId))
+            {
+                MessageBox.Show("Silakan pilih data dari tabel terlebih dahulu!");
+                return;
+            }
+
+            try
+            {
+                if (conn.State == ConnectionState.Closed) conn.Open();
             }
         }
 
