@@ -66,7 +66,16 @@ namespace KatalogGamePribadi
         {
             try
             {
-
+                if (conn.State == System.Data.ConnectionState.Closed)
+                    conn.Open();
+                dgvGames.Rows.Clear();
+                dgvGames.Columns.Clear();
+                dgvGames.Columns.Add("id_game", "id_game");
+                dgvGames.Columns.Add("id_platform", "id_platform");
+                dgvGames.Columns.Add("id_user", "id_user");
+                dgvGames.Columns.Add("judul_game", "judul_game");
+                dgvGames.Columns.Add("genre", "genre");
+                dgvGames.Columns.Add("status_main", "status_main");
             }
 
 
