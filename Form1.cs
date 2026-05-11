@@ -121,6 +121,10 @@ namespace KatalogGamePribadi
                 int gameExists = Convert.ToInt32(cmdCheck.ExecuteScalar());
 
                 if (gameExists > 0)
+                {
+                    MessageBox.Show("⚠️Judul game sudah ada dalam koleksi!!⚠️", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
             }
         }
 
