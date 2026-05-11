@@ -301,6 +301,43 @@ namespace KatalogGamePribadi
             cbGenre.SelectedIndex = -1;
             cbStatus.SelectedIndex = -1;
         }
+
+
+
+        private void HitungTotalGame()
+        {
+            try
+            {
+                // Pastikan koneksi terbuka
+                if (conn.State == ConnectionState.Closed) conn.Open();
+
+                // Query SQL untuk menghitung baris
+                string query = "SELECT COUNT(*) FROM Games";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+
+                // ExecuteScalar digunakan untuk mengambil satu nilai (hasil COUNT)
+                // Kita konversi hasil object ke tipe int
+                int total = Convert.ToInt32(cmd.ExecuteScalar());
+
+                // Tampilkan ke label
+                lblTotalRecord.Text = "Total Koleksi Game: " + total.ToString();
+            }
+            catch (Exception ex)
+            {
+                // Jangan tampilkan MessageBox agar tidak mengganggu, cukup log jika perlu
+                Console.WriteLine("Error Hitung Data: " + ex.Message);
+            }
+            finally
+            {
+                //
+            }
+        }
+
+    }
+
+}
+
     }
     }
         }
