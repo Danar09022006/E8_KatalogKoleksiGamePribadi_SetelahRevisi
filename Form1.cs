@@ -242,7 +242,25 @@ namespace KatalogGamePribadi
                     btnRead.PerformClick();
                 }
             }
+
+
+            private void dgvGames_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dgvGames.Rows[e.RowIndex];
+
+                // Simpan id_game ke variabel global
+                selectedGameId = row.Cells["id_game"].Value.ToString();
+
+                // Pindahkan data ke inputan
+                txtJudul.Text = row.Cells["judul_game"].Value.ToString();
+                cbGenre.Text = row.Cells["genre"].Value.ToString();
+                cbPlatform.Text = row.Cells["id_platform"].Value.ToString();
+                cbStatus.Text = row.Cells["status_main"].Value.ToString();
+            }
         }
+    }
     }
         }
 
