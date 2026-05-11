@@ -77,14 +77,31 @@ namespace KatalogGamePribadi
                 dgvGames.Columns.Add("genre", "genre");
                 dgvGames.Columns.Add("status_main", "status_main");
 
+
                 string query = "SELECT * FROM Games";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 SqlDataReader reader = cmd.ExecuteReader();
                 HitungTotalGame();
                 while (reader.Read())
                 {
-
+                    dgvGames.Rows.Add(
+                    reader["id_game"].ToString(),
+                    reader["id_platform"].ToString(),
+                    reader["id_user"].ToString(),
+                    reader["judul_game"].ToString(),
+                    reader["genre"].ToString(),
+                    reader["status_main"].ToString()
+                    );
                 }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal menampilkan data: " + ex);
+
+            }
+        }
 
 
 
