@@ -45,7 +45,23 @@ namespace KatalogGamePribadi
             }
         }
 
-        
+
+
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            ConnectDatabase();
+        }
+
+        private void btnDisconnect_Click(object sender, EventArgs e)
+        {
+            if (conn.State == System.Data.ConnectionState.Open)
+            {
+                conn.Close();
+                MessageBox.Show("Koneksi Terputus");
+            }
+        }
+
+
 
 
 
