@@ -293,6 +293,14 @@ namespace KatalogGamePribadi
                 // Kosongkan agar tidak muncul popup error terus-menerus saat mengetik
             }
         }
+
+        private void ClearForm()
+        {
+            txtJudul.Clear();
+            cbPlatform.SelectedIndex = -1;
+            cbGenre.SelectedIndex = -1;
+            cbStatus.SelectedIndex = -1;
+        }
     }
     }
         }
