@@ -62,7 +62,12 @@ namespace KatalogGamePribadi
         }
 
 
+        private void btnRead_Click(object sender, EventArgs e)
+        {
+            try
+            {
 
+            }
 
 
 
