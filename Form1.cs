@@ -245,7 +245,7 @@ namespace KatalogGamePribadi
 
 
             private void dgvGames_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
+            {
             if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = dgvGames.Rows[e.RowIndex];
@@ -258,6 +258,39 @@ namespace KatalogGamePribadi
                 cbGenre.Text = row.Cells["genre"].Value.ToString();
                 cbPlatform.Text = row.Cells["id_platform"].Value.ToString();
                 cbStatus.Text = row.Cells["status_main"].Value.ToString();
+            }
+        }
+
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (conn.State == ConnectionState.Closed) conn.Open();
+
+                // Gunakan JOIN agar kolom yang muncul konsisten dengan tombol READ
+                // Pakai Parameter @cari untuk keamanan
+                string query = @"SELECT g.id_game, g.id_platform, g.id_user, g.judul_game, g.genre, g.status_main 
+                         FROM Games g 
+                         WHERE g.judul_game LIKE @cari";
+
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+                adapter.SelectCommand.Parameters.AddWithValue("@cari", "%" + txtSearch.Text + "%");
+
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+
+                // Sebelum mengisi data baru, kita bersihkan DataSource yang lama
+                dgvGames.DataSource = null;
+                dgvGames.Columns.Clear(); // Menghapus kolom duplikat
+
+                dgvGames.DataSource = dt;
+
+                conn.Close();
+            }
+            catch (Exception ex)
+            {
+                // Kosongkan agar tidak muncul popup error terus-menerus saat mengetik
             }
         }
     }
