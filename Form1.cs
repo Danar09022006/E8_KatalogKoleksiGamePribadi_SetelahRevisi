@@ -104,7 +104,17 @@ namespace KatalogGamePribadi
         }
 
         private void btnCreate_Click(object sender, EventArgs e)
-
+        {
+            try
+            {
+                if ( (txtJudul.Text.Trim().Length < 3))
+                {
+                    MessageBox.Show("Judul game terlalu pendek! Masukkan minimal 3 karakter.", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                    
+                }
+            }
+        }
 
 
     
