@@ -28,6 +28,26 @@ namespace KatalogGamePribadi
             HitungTotalGame(); // Panggil fungsi hitung total saat form pertama kali dimuat
         }
 
+
+        private void ConnectDatabase()
+        {
+            try
+            {
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                    MessageBox.Show("Koneksi Berhasil!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Koneksi Gagal: " + ex.Message);
+            }
+        }
+
         
+
+
+
 
     
