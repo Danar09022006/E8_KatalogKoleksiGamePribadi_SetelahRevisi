@@ -173,7 +173,41 @@ namespace KatalogGamePribadi
             try
             {
                 if (conn.State == ConnectionState.Closed) conn.Open();
+                // Query diubah: WHERE menggunakan id_game
+                string query = @"UPDATE Games 
+                         SET judul_game=@judul, genre=@genre, id_platform=@platform, status_main=@status 
+                         WHERE id_game=@id";
+
+                cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@id", selectedGameId); // Menggunakan ID sebagai kunci
+                cmd.Parameters.AddWithValue("@judul", txtJudul.Text); // Sekarang aman untuk diubah
+                cmd.Parameters.AddWithValue("@genre", cbGenre.Text);
+                cmd.Parameters.AddWithValue("@platform", cbPlatform.SelectedIndex + 1);
+                cmd.Parameters.AddWithValue("@status", cbStatus.Text);
+
+                int result = cmd.ExecuteNonQuery();
+
+                if (result > 0)
+                {
+                    MessageBox.Show("Data Berhasil Diperbarui!");
+                    btnRead.PerformClick();
+                    ClearForm();
+                    selectedGameId = "";
+                    HitungTotalGame(); // <--- Panggil di sini
+                    btnRead.PerformClick();// Reset ID setelah update
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal Update: " + ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+    }
         }
 
 
