@@ -19,6 +19,7 @@ namespace KatalogGamePribadi
         SqlCommand cmd;
         SqlDataAdapter adapter;
         DataTable dt;
+        BindingSource bsGames = new BindingSource();
 
         public Form1()
         {
@@ -66,90 +67,51 @@ namespace KatalogGamePribadi
         {
             try
             {
-                if (conn.State == System.Data.ConnectionState.Closed)
-                    conn.Open();
-                dgvGames.Rows.Clear();
-                dgvGames.Columns.Clear();
-                dgvGames.Columns.Add("id_game", "id_game");
-                dgvGames.Columns.Add("id_platform", "id_platform");
-                dgvGames.Columns.Add("id_user", "id_user");
-                dgvGames.Columns.Add("judul_game", "judul_game");
-                dgvGames.Columns.Add("genre", "genre");
-                dgvGames.Columns.Add("status_main", "status_main");
+                if (conn.State == ConnectionState.Closed) conn.Open();
 
+                // Memanggil VIEW, bukan tabel langsung
+                SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM vw_KatalogGames", conn);
+                dt = new DataTable();
+                da.Fill(dt);
 
-                string query = "SELECT * FROM Games";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                SqlDataReader reader = cmd.ExecuteReader();
+                // Menggunakan Data Binding (Syarat 4 & 5)
+                bsGames.DataSource = dt;
+                dgvGames.DataSource = bsGames;
+                bindingNavigator1.BindingSource = bsGames; // Menghubungkan Navigator
+
                 HitungTotalGame();
-                while (reader.Read())
-                {
-                    dgvGames.Rows.Add(
-                    reader["id_game"].ToString(),
-                    reader["id_platform"].ToString(),
-                    reader["id_user"].ToString(),
-                    reader["judul_game"].ToString(),
-                    reader["genre"].ToString(),
-                    reader["status_main"].ToString()
-                    );
-                }
-
-                reader.Close();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Gagal menampilkan data: " + ex);
-
-            }
+            catch (Exception ex) { MessageBox.Show("Error: ⚠️Data Tidak Terbaca⚠️ " + ex.Message); }
+            finally { conn.Close(); }
         }
+
+        
+        
 
         private void btnCreate_Click(object sender, EventArgs e)
         {
             try
             {
-                if ( (txtJudul.Text.Trim().Length < 3))
-                {
-                    MessageBox.Show("Judul game terlalu pendek! Masukkan minimal 3 karakter.", "Validasi Gagal", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                    
-                }
-                string checkQuery = "SELECT COUNT(*) FROM Games WHERE judul_game = @judul.Check";
-                SqlCommand cmdCheck = new SqlCommand(checkQuery, conn);
-                cmdCheck.Parameters.AddWithValue("@judulCheck", txtJudul.Text);
-
-                if (conn.State == ConnectionState.Closed) conn.Open();
-                int gameExists = Convert.ToInt32(cmdCheck.ExecuteScalar());
-
-                if (gameExists > 0)
-                {
-                    MessageBox.Show("⚠️Judul game sudah ada dalam koleksi!!⚠️", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
                 if (conn.State == ConnectionState.Closed) conn.Open();
 
-                string query = @"INSERT INTO Games (judul_game, id_platform, id_user, genre, status_main)
+                // Memanggil Stored Procedure
+                cmd = new SqlCommand("sp_InsertGame", conn);
+                cmd.CommandType = CommandType.StoredProcedure; // Penting!
 
-                       VALUES (@judul_game, @id_platform, @id_user, @genre, @status_main)";
-
-                SqlCommand cmd = new SqlCommand(query, conn);
-
-                cmd.Parameters.AddWithValue("@judul", txtJudul.Text);
+                cmd.Parameters.AddWithValue("@judul", txtJudul.Text.Trim());
                 cmd.Parameters.AddWithValue("@platform", cbPlatform.SelectedIndex + 1);
+                cmd.Parameters.AddWithValue("@user", 1);
                 cmd.Parameters.AddWithValue("@genre", cbGenre.Text);
                 cmd.Parameters.AddWithValue("@status", cbStatus.Text);
 
-                cmd.Parameters.AddWithValue("@id_user", 1);
-
-                int result = cmd.ExecuteNonQuery();
+                int result = cmd.ExecuteNonQuery(); // Tambahkan 'int result =' di sini
 
                 if (result > 0)
                 {
-                    MessageBox.Show("Data game berhasil ditambahkan");
+                    MessageBox.Show("Data game berhasil ditambahkan!");
                     ClearForm();
                     btnRead.PerformClick();
-                    HitungTotalGame(); // <--- Panggil di sini
-                    btnRead.PerformClick();// Supaya tabel langsung update
+                    HitungTotalGame();
                 }
             }
             catch (Exception ex)
@@ -174,11 +136,10 @@ namespace KatalogGamePribadi
             {
                 if (conn.State == ConnectionState.Closed) conn.Open();
                 // Query diubah: WHERE menggunakan id_game
-                string query = @"UPDATE Games 
-                         SET judul_game=@judul, genre=@genre, id_platform=@platform, status_main=@status 
-                         WHERE id_game=@id";
+                
 
-                cmd = new SqlCommand(query, conn);
+                cmd = new SqlCommand("sp_UpdateGame", conn);
+                cmd.CommandType = CommandType.StoredProcedure; // Penting!  
                 cmd.Parameters.AddWithValue("@id", selectedGameId); // Menggunakan ID sebagai kunci
                 cmd.Parameters.AddWithValue("@judul", txtJudul.Text); // Sekarang aman untuk diubah
                 cmd.Parameters.AddWithValue("@genre", cbGenre.Text);
@@ -205,10 +166,12 @@ namespace KatalogGamePribadi
             {
                 conn.Close();
             }
+        }
 
 
-            private void btnDelete_Click(object sender, EventArgs e)
-            {
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+           
             if (txtJudul.Text == "")
             {
                 MessageBox.Show("Pilih data yang akan dihapus!");
@@ -220,31 +183,40 @@ namespace KatalogGamePribadi
             {
                 try
                 {
-                    conn = koneksi.GetConn();
-                    conn.Open();
+                    // 1. Buka koneksi dengan aman (Cukup 1 baris ini saja)
+                    if (conn.State == ConnectionState.Closed) conn.Open();
 
-                    string query = "DELETE FROM Games WHERE judul_game=@judul";
-                    cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@judul", txtJudul.Text);
+                    // 2. Langsung panggil Stored Procedure (hapus string query yang lama)
+                    cmd = new SqlCommand("sp_DeleteGame", conn);
+                    cmd.CommandType = CommandType.StoredProcedure; // Penting!
 
+                    // 3. Kirimkan parameter ID
+                    cmd.Parameters.AddWithValue("@id", selectedGameId);
+
+                    // 4. Eksekusi
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("Data Berhasil Dihapus!");
 
-                    conn.Close();
+                    // 5. Refresh form dan tabel
+                    ClearForm();
                     btnRead.PerformClick();
                     HitungTotalGame();
-                    ClearForm();
-
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Gagal Hapus: " + ex.Message);
-                    btnRead.PerformClick();
+                }
+                finally
+                {
+                    // Pastikan koneksi selalu ditutup, baik berhasil maupun error
+                    if (conn.State == ConnectionState.Open) conn.Close();
                 }
             }
+        }
+        
 
 
-            private void dgvGames_CellContentClick(object sender, DataGridViewCellEventArgs e)
+            private void dgvGames_CellClick(object sender, DataGridViewCellEventArgs e)
             {
             if (e.RowIndex >= 0)
             {
@@ -268,25 +240,15 @@ namespace KatalogGamePribadi
             {
                 if (conn.State == ConnectionState.Closed) conn.Open();
 
-                // Gunakan JOIN agar kolom yang muncul konsisten dengan tombol READ
-                // Pakai Parameter @cari untuk keamanan
-                string query = @"SELECT g.id_game, g.id_platform, g.id_user, g.judul_game, g.genre, g.status_main 
-                         FROM Games g 
-                         WHERE g.judul_game LIKE @cari";
+                cmd = new SqlCommand("sp_SearchGame", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@keyword", txtSearch.Text); // Parameter dikirim, tapi di dalam SQL-nya digabung secara mentah
 
-                SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
-                adapter.SelectCommand.Parameters.AddWithValue("@cari", "%" + txtSearch.Text + "%");
+                SqlDataAdapter daSearch = new SqlDataAdapter(cmd);
+                DataTable dtSearch = new DataTable();
+                daSearch.Fill(dtSearch);
 
-                DataTable dt = new DataTable();
-                adapter.Fill(dt);
-
-                // Sebelum mengisi data baru, kita bersihkan DataSource yang lama
-                dgvGames.DataSource = null;
-                dgvGames.Columns.Clear(); // Menghapus kolom duplikat
-
-                dgvGames.DataSource = dt;
-
-                conn.Close();
+                bsGames.DataSource = dtSearch; // Update binding
             }
             catch (Exception ex)
             {
@@ -334,16 +296,97 @@ namespace KatalogGamePribadi
             }
         }
 
+        private void btnInjection_Click(object sender, EventArgs e)
+        {
+            // Tambahkan peringatan agar kamu tidak tidak sengaja mengkliknya
+            DialogResult dialog = MessageBox.Show(
+                "PERINGATAN: Ini akan mendemonstrasikan SQL Injection yang meretas database dan mengubah semua status game menjadi 'Tamat'. Lanjutkan eksekusi?",
+                "Simulasi Serangan SQL Injection",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (dialog == DialogResult.Yes)
+            {
+                try
+                {
+                    if (conn.State == ConnectionState.Closed) conn.Open();
+
+                    // Ini adalah Payload SQL Injection-nya
+                    // Akan memotong query LIKE milik pencarian, menutupnya, lalu menyisipkan query UPDATE
+                    string payload = "x%'; UPDATE Games SET status_main = 'Tamat'; --";
+
+                    cmd = new SqlCommand("sp_SearchGame", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@keyword", payload);
+
+                    // Kita pakai ExecuteNonQuery karena payload berisi query UPDATE yang memanipulasi data
+                    cmd.ExecuteNonQuery();
+
+                    MessageBox.Show(
+                        "💥 Serangan Berhasil! Semua status game telah diubah menjadi 'Tamat' secara paksa. Lihat perubahannya di tabel.",
+                        "System Hacked",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+
+                    // Refresh tabel untuk melihat kerusakan yang terjadi
+                    btnRead.PerformClick();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Gagal melakukan simulasi: " + ex.Message);
+                }
+                finally
+                {
+                    if (conn.State == ConnectionState.Open) conn.Close();
+                }
+            }
+        }
+
+        private void btnResetData_Click(object sender, EventArgs e)
+        {
+            // Tambahkan konfirmasi agar tidak tidak sengaja ter-reset
+            if (MessageBox.Show("Kembalikan semua data game ke kondisi semula?", "Konfirmasi Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                try
+                {
+                    if (conn.State == ConnectionState.Closed) conn.Open();
+
+                    // Query: Hapus isi tabel Games, lalu isi kembali dari Games_Backup
+                    // Karena id_game adalah otomatis (Identity), kita sebutkan kolomnya satu per satu
+                    string query = @"
+                IF OBJECT_ID('dbo.Games_Backup') IS NOT NULL
+                BEGIN
+                    DELETE FROM dbo.Games;
+                    
+                    INSERT INTO dbo.Games (judul_game, id_platform, id_user, genre, status_main)
+                    SELECT judul_game, id_platform, id_user, genre, status_main 
+                    FROM dbo.Games_Backup;
+                END
+                ELSE
+                BEGIN
+                    THROW 51000, 'Tabel Backup tidak ditemukan!', 1;
+                END";
+
+                    cmd = new SqlCommand(query, conn);
+                    cmd.CommandType = CommandType.Text; // Gunakan Text karena ini raw query, bukan Stored Procedure
+                    cmd.ExecuteNonQuery();
+
+                    MessageBox.Show("Data berhasil direset! Kondisi database telah kembali normal.", "Reset Sukses", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Refresh tampilan tabel dan total record
+                    btnRead.PerformClick();
+                    HitungTotalGame();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Gagal mereset data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    if (conn.State == ConnectionState.Open) conn.Close();
+                }
+            }
+        }
     }
 
 }
-
-    }
-    }
-        }
-
-    }
-        }
-
-
-    
